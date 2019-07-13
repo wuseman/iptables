@@ -186,7 +186,7 @@ You would like to monitor what's going on with iptables in real time, like with 
     iptables -A INPUT -p tcp --destination-port 80 -m iprange --src-range 192.168.1.100-192.168.1.200 -j ACCEPT
 
 ####  Open a range of ports
-    iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 7000:7010 -j ACCEPT
+    iptables -A INPUT -p tcp --dport 6500:10000 -j ACCEPT
 
 #### Specifying portrange with multiport
      iptables -A INPUT -i eth0 -p tcp -m state --state NEW -m multiport --dports ssh,smtp,http,https -j ACCEPT
