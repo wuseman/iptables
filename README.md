@@ -168,7 +168,10 @@ You would like to monitor what's going on with iptables in real time, like with 
 #### Accept Already Established Connection (lDNS queries etc)
      iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
-
+# Allow SSH from a specifik IP and block the rest
+     iptables -I INPUT -s <Static IP> -p tcp -m tcp --dport 22 -j ACCEPT
+     iptables -I INPUT -p tcp -m tcp --dport 22 -j REJECT
+	
 #### Allow a specifik ip address on a specifik port
     iptables -A INPUT -p tcp -m tcp --dport port_number -s ip_address -j ACCEPT
 
