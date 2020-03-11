@@ -53,3 +53,7 @@ iptables -A INPUT -i lo                 -j ACCEPT
 
 # RULES
 iptables -I INPUT -p tcp -s $HOME       -j ACCEPT
+
+# Allow SSH from a specifik IP and block the rest
+iptables -I INPUT -s <Static IP> -p tcp -m tcp --dport 22 -j ACCEPT
+iptables -I INPUT -p tcp -m tcp --dport 22 -j REJECT
