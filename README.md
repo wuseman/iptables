@@ -241,7 +241,8 @@ You would like to monitor what's going on with iptables in real time, like with 
      iptables -P INPUT DROP
 
 #### Block outgoing sites
-     iptables -A OUTPUT -p tcp -d www.microsoft.com -j DRO	
+     iptables -A OUTPUT -p tcp -d www.microsoft.com -j DROP
+     
 #### Block an IP Address
      iptables -A INPUT -s 192.168.1.10 -j DROP
 
@@ -285,7 +286,8 @@ You would like to monitor what's going on with iptables in real time, like with 
      iptables -A INPUT -p tcp -m state --state NEW --dport http -m iplimit --iplimit-above 5 -j DROP
 
 ##### Maintaining a List of recent Connections to Match Against
-    iptables -A FORWARD -m recent --name portscan --rcheck --seconds 100 -j DROPiptables -A FORWARD -p tcp -i eth0 --dport 443 -m recent --name portscan --set -j DROP
+    iptables -A FORWARD -m recent --name portscan --rcheck --seconds 100 -j DROP
+    iptables -A FORWARD -p tcp -i eth0 --dport 443 -m recent --name portscan --set -j DROP
 
 #### Matching Against a string in a Packet’s Data Payload
      iptables -A FORWARD -m string --string '.com' -j DROP
@@ -294,11 +296,9 @@ You would like to monitor what's going on with iptables in real time, like with 
 #### Protection against port scanning
      iptables -N port-scanningiptables -A port-scanning -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 1/s --limit-burst 2 -j RETURNiptables -A port-scanning -j DROP
 
-#### SSH brute-force protection
-     iptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --setiptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 -j DROP
-
 #### Syn-flood protection
-     iptables -N syn_floodiptables -A INPUT -p tcp --syn -j syn_floodiptables -A syn_flood -m limit --limit 1/s --limit-burst 3 -j RETURN
+     iptables -N syn_floodiptables -A INPUT -p tcp --syn -j syn_flood
+     iptables -A syn_flood -m limit --limit 1/s --limit-burst 3 -j RETURN
      iptables -A syn_flood -j DROPiptables -A INPUT -p icmp -m limit --limit  1/s --limit-burst 1 -j ACCEPT
      iptables -A INPUT -p icmp -m limit --limit 1/s --limit-burst 1 -j LOG --log-prefix PING-DROP:
      iptables -A INPUT -p icmp -j DROPiptables -A OUTPUT -p icmp -j ACCEPT
@@ -338,10 +338,6 @@ You would like to monitor what's going on with iptables in real time, like with 
      iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
      iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
 
-
-
-
-
 #### Reject rules
 
 ##### Reject all rules by default
@@ -362,9 +358,6 @@ You would like to monitor what's going on with iptables in real time, like with 
 #### Log and Drop Packets with Limited Number of Log Entries
      iptables -A INPUT -i eth1 -s 10.0.0.0/8 -m limit --limit 5/m --limit-burst 7 -j LOG --log-prefix "IP_SPOOF A: "
      iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j DROP
-
-
-
 
 # Allow examples
 ### Allow All Incoming SSH
@@ -433,9 +426,5 @@ You would like to monitor what's going on with iptables in real time, like with 
 #### Allow All Incoming POP3S
      iptables -A INPUT -p tcp --dport 995 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
      iptables -A OUTPUT -p tcp --sport 995 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-
-
-
 
 
